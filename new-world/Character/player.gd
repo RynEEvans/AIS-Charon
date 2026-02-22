@@ -8,7 +8,8 @@ extends CharacterBody2D
 @export var player_gravity : float = 1
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
-@onready var fuelbar = $CanvasLayer/FuelBar
+@onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar
+@onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar
 @onready var main = get_tree().get_root().get_node(".")
 @onready var bullet = load("res://Character/bullet.tscn")
 
@@ -34,6 +35,12 @@ var spawnRot : float
 var can_shoot: bool = true
 @export var mag_size : int = 10
 var max_mag_size : int = 10
+
+#Health Stuff
+var health = 10
+var health_max = 10
+var health_min = 0
+var has_died : bool = false
 
 func _ready():
 	jetpack_fuel = 2
@@ -118,8 +125,10 @@ func _physics_process(delta: float):
 func update_animation():
 	if(Input.is_action_pressed("shoot")):
 		shoot()
-	if not animation_locked:
-		if not is_on_floor():
+	if not animation_locked || not movement_locked:
+		if health <= 0:
+			killPlayer()
+		elif not is_on_floor():
 			animated_sprite.play("ExploJumpLoop")
 		else:
 			if direction.x != 0:
@@ -138,6 +147,29 @@ func update_facing_direction():
 	elif direction.x < 0:
 		dashDirection = Vector2(-1,0)
 		animated_sprite.flip_h = true
+
+func update_health_bar():
+	if health >= 10:
+		health = 10
+		healthbar.play("10")
+	elif health == 9:
+		healthbar.play("9")
+	elif health == 8:
+		healthbar.play("8")
+	elif health == 7:
+		healthbar.play("7")
+	elif health == 6:
+		healthbar.play("6")
+	elif health == 5:
+		healthbar.play("5")
+	elif health == 4:
+		healthbar.play("4")
+	elif health == 3:
+		healthbar.play("3")
+	elif health == 2:
+		healthbar.play("2")
+	elif health == 1:
+		healthbar.play("1")
 
 func jump():
 	$jump_height_timer.start()
@@ -219,16 +251,14 @@ func shoot():
 		var instance = bullet.instantiate()
 		instance.flip(false)
 		instance.dir = rotation
-		instance.spawnPos = Vector2(global_position.x - 19 ,global_position.y - 9) 
+		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
 		instance.spawnRot = global_rotation
 		if animated_sprite.flip_h == true:
 			instance.flip(true)
-			instance.spawnPos = Vector2(global_position.x,global_position.y - 9)
-			
+			instance.spawnPos = Vector2(global_position.x - 20,global_position.y - 33)
 		main.add_child.call_deferred(instance)
 		mag_size -= 1
 		check_mag_size(mag_size)
-		print(mag_size)
 
 func check_mag_size(mag: int):
 	if mag <= 0:
@@ -238,7 +268,7 @@ func check_mag_size(mag: int):
 		$gun_cooldown.start()
 
 func _on_animated_sprite_2d_animation_finished() -> void:
-	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash"].has(animated_sprite.animation)):
+	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(animated_sprite.animation)):
 		animation_locked = false
 
 
@@ -262,10 +292,13 @@ func _on_jump_height_timer_timeout() -> void:
 			velocity.y = 75
 
 func killPlayer():
-	position = %RespawnPoint.position
-
-func _on_area_2d_body_entered() -> void:
-	killPlayer()
+	movement_locked = true
+	animation_locked = true
+	animated_sprite.play("Death")
+	$hitbox.monitoring = false
+	if has_died == false:
+		$respawn_timer.start()
+		has_died = true
 
 
 func _on_coyote_timer_timeout() -> void:
@@ -283,3 +316,27 @@ func _on_gun_cooldown_timeout() -> void:
 func _on_reload_timer_timeout() -> void:
 	mag_size = max_mag_size
 	can_shoot = true
+
+
+func _on_hitbox_body_entered(body: Node2D) -> void:
+	pass
+
+
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	health -= 1
+	update_health_bar()
+	animated_sprite.play("Hurt")
+
+
+func _on_respawn_timer_timeout() -> void:
+	position = %RespawnPoint.position
+	$hitbox.monitoring = true
+	movement_locked = false
+	animation_locked = false
+	has_died = false
+	health = health_max
+	update_health_bar()
+
+
+func _on_fall_box_area_entered(area: Area2D) -> void:
+	killPlayer()

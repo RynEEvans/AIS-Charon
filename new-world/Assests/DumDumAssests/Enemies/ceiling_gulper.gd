@@ -14,8 +14,8 @@ class_name CeilingGulperEnemy
 const speed = 30
 var gulp_is_chase : bool
 
-var health = 80
-var health_max = 80
+var health = 10
+var health_max = 10
 var health_min = 0
 
 var dead : bool = false
@@ -33,6 +33,8 @@ var motion_locked : bool = false
 var hit_wall : bool = false
 var can_lunge : bool = true
 var current_body : Node2D = null
+var is_enemy : bool = true
+var has_died : bool = false
 
 
 
@@ -49,7 +51,6 @@ func _process(delta):
 			hit_wall = true
 			$wall_timer.start()
 			dir *= -1
-
 	if (is_on_wall()):
 		if(hit_wall == false):
 			hit_wall = true
@@ -63,16 +64,13 @@ func update_facing_direction():
 	if dir.x > 0:
 		dir = Vector2(1,0)
 		animated_sprite.flip_h = false
-		animated_sprite.offset = Vector2.ZERO
 		l_lunge_direction.position = Vector2.ZERO
 		turn_around.position = Vector2(68,0)
 	elif dir.x < 0:
 		dir = Vector2(-1,0)
 		animated_sprite.flip_h = true
-		animated_sprite.offset = Vector2(70.0,0)
-		l_lunge_direction.position = Vector2(35.0,0)
+		l_lunge_direction.position = Vector2(68.0,0)
 		turn_around.position = Vector2.ZERO
-
 
 func move(delta):
 	if !motion_locked:
@@ -90,6 +88,7 @@ func choose(array):
 
 func forward_lunge():
 	if (can_lunge == true):
+		can_lunge = false
 		velocity.x = 0
 		motion_locked = true
 		animated_sprite.play("Charge")
@@ -98,6 +97,7 @@ func forward_lunge():
 
 func upward_lunge():
 	if (can_lunge == true):
+		can_lunge = false
 		velocity.x = 0
 		motion_locked = true
 		animated_sprite.play("Charge")
@@ -117,9 +117,6 @@ func _on_direction_timer_timeout() -> void:
 
 func _on_ray_timer_timeout() -> void:
 	ray_trigger = false
-
-func _on_forward_lunge_body_entered() -> void:
-	forward_lunge()
 
 
 func _on_left_charge_time_timeout() -> void:
@@ -145,19 +142,50 @@ func _on_lunge_cooldown_timeout() -> void:
 	can_lunge = true
 
 
-func _on_turn_around_body_entered() -> void:
+func _on_turn_around_body_entered(body: Node2D) -> void:
 	dir *= -1
 	forward_lunge()
 
 
-func _on_up_lunge_body_entered() -> void:
+func _on_up_lunge_body_entered(body: Node2D) -> void:
 	upward_lunge()
 
 
 func _on_up_charge_time_timeout() -> void:
-	animated_sprite.offset = Vector2(0,-41)
+	velocity.x = 0
 	animated_sprite.play("UpwardLunge")
 	lunge_detection.play("up_lunge")
-	
-	
 	$move_timer.start()
+
+
+func _on_left_lunge_body_entered(body: Node2D) -> void:
+	forward_lunge()
+
+
+func _on_head_hit_box_body_entered(body: Node2D) -> void:
+	body.knockback = position.direction_to(body.position) * knockback_force
+
+
+func _on_head_hurt_box_area_entered(area: Area2D) -> void:
+	health -= 1
+	print(has_died)
+	if health <= 0 && has_died == false:
+		has_died = true
+		motion_locked = true
+		velocity.x = 0
+		l_lunge_direction.monitoring = false
+		turn_around.monitoring = false
+		u_lunge_detection.monitoring = false
+		$HeadHitBox.monitoring = false
+		$HeadHurtBox.monitoring = false
+		animated_sprite.play("Death")
+		$respawn_timer.start()
+	elif health > 0 && has_died == false:
+		print("hit")
+		motion_locked = true
+		animated_sprite.play("Impact")
+		$hit_timer.start()
+
+
+func _on_respawn_timer_timeout() -> void:
+	queue_free()

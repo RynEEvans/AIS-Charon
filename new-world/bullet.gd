@@ -18,16 +18,24 @@ func _physics_process(delta: float):
 func flip(h : bool):
 	if h == true:
 		$Sprite2D.flip_h = true
-		$Area2D.position = Vector2(-31.818,0)
+		$bullet.position = Vector2(-31.818,0)
 		if bullet_speed > 0:
 			bullet_speed *= -1
 	else:
 		$Sprite2D.flip_h = false 
-		$Area2D.position = Vector2(0,0)
+		$bullet.position = Vector2(0,0)
 		if bullet_speed < 0:
 			bullet_speed *= -1
 	
 
 
 func _on_life_timeout() -> void:
+	queue_free()
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	queue_free()
+
+
+func _on_bullet_area_entered(area: Area2D) -> void:
 	queue_free()
