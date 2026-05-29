@@ -7,13 +7,13 @@ extends CharacterBody2D
 @export var dash_speed : float = 2000.0
 @export var player_gravity : float = 1
 
-@onready var animated_sprite : AnimatedSprite2D = $Body
-@onready var gun_sprite : AnimatedSprite2D = $GunArm
-@onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar
-@onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar
-@onready var headUI = $CanvasLayer/PanelContainer4/Head
-@onready var main = get_tree().get_root().get_node(".")
-@onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn")
+@onready var animated_sprite : AnimatedSprite2D = $Body #The Main Character Body
+@onready var gun_sprite : AnimatedSprite2D = $GunArm #The Right Arm Sprite which holds the gun
+@onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar #The Fuel Bar UI
+@onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar #The Healthbar UI
+@onready var headUI = $CanvasLayer/PanelContainer4/Head #The Head UI
+@onready var main = get_tree().get_root().get_node(".") #Lowkey forgot what this does, and why I have it
+@onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn") #The Bullet Sprite
 
 #Movement
 var direction : Vector2 = Vector2.ZERO
@@ -58,7 +58,6 @@ var has_died : bool = false
 
 func _ready():
 	jetpack_fuel = 2
-	#fuelbar.init_jetfuel(jetpack_fuel)
 	fuelbar.play("tankFull")
 	
 
@@ -83,8 +82,14 @@ func _physics_process(delta: float):
 			land()
 
 		was_in_air = false
+		
 	# Handle jump.
 	if Input.is_action_just_pressed("jump"):
+		#Coyote Jump code
+		
+		#Coyote Jump gives the player some extra time to jump after falling
+		#to make Jumping more accesible and not as frame perfect
+		#think of Wil E Coyote and how he can jump mid air sometimes
 		if is_on_floor() || can_coyote_jump:
 			#Normal Jump from Floor
 			jump()
@@ -105,7 +110,6 @@ func _physics_process(delta: float):
 		dash()
 		remove_jetfuel()
 	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_vector("left", "right", "up", "down")
 	if direction && movement_locked == false:
 		if dashing == true:
@@ -135,7 +139,7 @@ func _physics_process(delta: float):
 	update_facing_direction()
 
 
-
+#Animation Code
 func update_animation():
 	if(Input.is_action_pressed("shoot")):
 		shoot()
@@ -170,6 +174,7 @@ func update_animation():
 				else:
 					animated_sprite.play("ExploIdle")
 
+#Changes the Boolean (char_flipped) so I know whether to play the right or left animation
 func update_facing_direction():
 	if direction.x > 0:
 		dashDirection = Vector2(1,0)
@@ -178,6 +183,7 @@ func update_facing_direction():
 		dashDirection = Vector2(-1,0)
 		char_flipped = true
 
+#Health and Health Bar Code
 func update_health_bar():
 	if health >= 10:
 		health = 10
@@ -211,19 +217,28 @@ func update_health_bar():
 		healthbar.play("1")
 		headUI.play("Low")
 
+#Jump Handling
 func jump():
 	$jump_height_timer.start()
 	velocity.y = jump_velocity
 	animated_sprite.play("ExploJumpStart")
 	animation_locked = true
 	
-	
+#Double Jump Handling
 func double_jump():
 	velocity.y = double_jump_velocity * 3
 	animated_sprite.play("ExploJumpLoop")	
 	animation_locked = true
 	has_double_jumped = true
-	
+
+#Finishing a Jump
+func land():
+	if(Input.is_action_pressed("shoot")):
+		shoot()
+	animated_sprite.play("ExploJumpEnd")
+	animation_locked = true
+
+#Dash Handling
 func dash():
 	if animated_sprite.flip_h == false:
 		velocity = dashDirection.normalized() * dash_speed
@@ -239,13 +254,8 @@ func dash():
 		animation_locked = true
 		movement_locked = true
 		$dash_timer.start()
-
-func land():
-	if(Input.is_action_pressed("shoot")):
-		shoot()
-	animated_sprite.play("ExploJumpEnd")
-	animation_locked = true
  
+#Jet Fuel Setter
 func _set_jetfuel():
 	if(jetpack_fuel == 0):
 		fuelbar.play("tankEmpty")
@@ -254,10 +264,12 @@ func _set_jetfuel():
 	elif(jetpack_fuel == 2):
 		fuelbar.play("tankFull")
 
+#Adding Jet Fuel
 func add_jetfuel():
 	jetpack_fuel = jetpack_fuel + 1
 	_set_jetfuel()
 
+#Removing Jet Fuel
 func remove_jetfuel():
 	jetpack_fuel = jetpack_fuel - 1
 	_set_jetfuel()
@@ -269,6 +281,7 @@ func remove_jetfuel():
 		if($fuel_timer1.time_left == 0):
 			$fuel_timer1.start()
 
+#Checking Jet Fuel to make sure it doesnt go above it's Maximum
 func check_jetfuel():
 	if(jetpack_fuel != max_fuel):
 		if(jetpack_fuel == 1):
@@ -285,6 +298,7 @@ func check_jetfuel():
 			jetpack_fuel = 2
 			_set_jetfuel()
 			
+#Shooting
 func shoot():
 	if can_shoot:
 		can_shoot = false
@@ -300,6 +314,7 @@ func shoot():
 		mag_size -= 1
 		check_mag_size(mag_size)
 
+#Checking Magazine Size of the gun
 func check_mag_size(mag: int):
 	if mag <= 0:
 		can_shoot = false
@@ -307,30 +322,12 @@ func check_mag_size(mag: int):
 	else:
 		$gun_cooldown.start()
 
+#Animation Lock
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(animated_sprite.animation)):
 		animation_locked = false
 
-
-func _on_dash_timer_timeout() -> void:
-	dashing = false
-	movement_locked = false
-
-func _on_fuel_timer_1_timeout() -> void:
-	add_jetfuel()
-	check_jetfuel()
-	
-
-func _on_fuel_timer_2_timeout() -> void:
-	add_jetfuel()
-	check_jetfuel()
-
-
-func _on_jump_height_timer_timeout() -> void:
-	if !(Input.is_action_pressed("jump")):
-		if (velocity.y < -75):
-			velocity.y = 75
-
+#Handing the Death Animation
 func killPlayer():
 	movement_locked = true
 	animation_locked = true
@@ -341,34 +338,45 @@ func killPlayer():
 		$respawn_timer.start()
 		has_died = true
 
+#TIMERS BELOW
+func _on_dash_timer_timeout() -> void:
+	dashing = false
+	movement_locked = false
+
+func _on_fuel_timer_1_timeout() -> void:
+	add_jetfuel()
+	check_jetfuel()
+
+func _on_fuel_timer_2_timeout() -> void:
+	add_jetfuel()
+	check_jetfuel()
+
+func _on_jump_height_timer_timeout() -> void:
+	if !(Input.is_action_pressed("jump")):
+		if (velocity.y < -75):
+			velocity.y = 75
 
 func _on_coyote_timer_timeout() -> void:
 	can_coyote_jump = false
-
-
+	
 func _on_jump_buffer_timer_timeout() -> void:
 	jump_buffered = false
 
-
 func _on_gun_cooldown_timeout() -> void:
 	can_shoot = true
-
 
 func _on_reload_timer_timeout() -> void:
 	mag_size = max_mag_size
 	can_shoot = true
 
-
 func _on_hitbox_body_entered(body: Node2D) -> void:
 	pass
-
 
 func _on_hitbox_area_entered(area: Area2D) -> void:
 	health -= 1
 	update_health_bar()
 	gun_sprite.visible = false
 	animated_sprite.play("HurtRight")
-
 
 func _on_respawn_timer_timeout() -> void:
 	position = %RespawnPoint.position
@@ -378,7 +386,6 @@ func _on_respawn_timer_timeout() -> void:
 	has_died = false
 	health = health_max
 	update_health_bar()
-
 
 func _on_fall_box_area_entered(area: Area2D) -> void:
 	killPlayer()
