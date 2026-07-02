@@ -662,4 +662,4 @@ func _endGroundPound():
 	gravityActive = true
 
 func _placeHolder():
-	print("")
+	print_debug("")

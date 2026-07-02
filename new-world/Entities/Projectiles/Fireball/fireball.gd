@@ -23,12 +23,12 @@ func _on_life_timeout() -> void:
 	queue_free()
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
-	print("HIT")
+	print_debug("HIT")
 	queue_free()
 
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	print("HIT WALL")
+	print_debug("HIT WALL")
 	if body.name == "Player":
 		body.knockback = position.direction_to(body.position) * knockback_force
 	queue_free()

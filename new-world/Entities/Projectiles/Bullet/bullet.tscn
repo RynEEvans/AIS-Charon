@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dgh5dge6j6kui"]
+[gd_scene format=3 uid="uid://bcxngnch0gu6s"]
 
 [ext_resource type="Script" uid="uid://di5l7vmyj8eex" path="res://Entities/Projectiles/Bullet/bullet.gd" id="1_ug0kq"]
 [ext_resource type="Texture2D" uid="uid://c2af7vt01jew4" path="res://Entities/Projectiles/Bullet/bullet.png" id="2_tid2b"]

@@ -14,7 +14,8 @@ extends CharacterBody2D
 @onready var o2bar = $CanvasLayer/PanelContainer5/O2Bar #The O2 Bar
 @onready var headUI = $CanvasLayer/PanelContainer4/Head #The Head UI
 @onready var main = get_tree().get_root().get_node(".") #Lowkey forgot what this does, and why I have it
-@onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn") #The Bullet Sprite
+@onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn") #The Bullet Scene
+@onready var beacon = load("res://Entities/Items/Beacon/beacon.tscn") #The Beacon Scene
 
 #Movement
 var direction : Vector2 = Vector2.ZERO
@@ -61,6 +62,9 @@ var o2 = 100
 var o2_max = 100
 var o2_min = 0
 var suffocating = false
+
+#Beacon Count
+var beacon_num = 3 #Number of Beacons that are avaible
 
 func _ready():
 	health = 10
@@ -130,6 +134,12 @@ func _physics_process(delta: float):
 	else:
 		velocity.x = move_toward(velocity.x, 0, walk_speed)
 		
+	#Handle Beacon
+	if Input.is_action_just_pressed("beacon"):
+		print_debug("BEACON")
+		deploy_beacon()
+		
+	pickup_beacon()
 
 	var was_on_floor = is_on_floor()
 	
@@ -166,7 +176,6 @@ func update_animation():
 					player_sprite.play("RunRight")
 					gun_sprite.visible = true
 					gun_sprite.z_index = 0
-					print(is_shooting)
 					if(is_shooting == false):
 						gun_sprite.play("GunWalkRight")
 				else:
@@ -333,7 +342,7 @@ func check_jetfuel():
 #Shooting
 func shoot():
 	if can_shoot == true && o2 > 0 && is_shooting == false:
-		print(is_shooting)
+		print_debug(is_shooting)
 		gun_sprite.visible = true
 		if(facing_left == false):
 			gun_sprite.z_index = 0
@@ -363,6 +372,29 @@ func check_mag_size(mag: int):
 	else:
 		$Timers/gun_cooldown.start()
 
+#Deploying Beacon
+func deploy_beacon():
+	if beacon_num > 0:
+		var instance = beacon.instantiate()
+		instance.dir = rotation
+		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
+		instance.spawnRot = global_rotation
+		instance.zdex = -2
+		main.add_child(instance)
+		instance.beacon_sprite.play("Idle")
+		beacon_num -= 1
+	elif beacon_num > 3:
+		beacon_num = 3
+
+func pickup_beacon():
+	
+	var instance = beacon.instantiate()
+	if instance.touching == true && Input.is_action_pressed("interact"):
+		print_debug("PRESSED F")
+		instance.picked_up()
+		beacon_num += 1
+		print_debug("picked up beacon")
+		
 #Animation Lock
 func _on_player_sprite_2d_animation_finished() -> void:
 	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(player_sprite.animation)):
@@ -436,5 +468,5 @@ func _on_o_2_timer_timeout() -> void:
 
 func _on_suffocate_timer_timeout() -> void:
 	health = health - 1
-	print(health)
+	print_debug(health)
 	update_health_bar()

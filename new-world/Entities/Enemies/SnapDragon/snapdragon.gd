@@ -68,7 +68,7 @@ func choose(array):
 	return array.front()
 
 func shoot(angle_in_radians):
-	print(can_shoot)
+	print_debug(can_shoot)
 	if can_shoot:
 		can_shoot = false
 		animation_locked = true
@@ -98,25 +98,25 @@ func _on_shoot_timer_timeout() -> void:
 
 
 func _on_for_diag_body_entered(body: Node2D) -> void:
-	print("1")
+	print_debug("1")
 	if body.name == "Player":
-		print("for deteced")
+		print_debug("for deteced")
 		if animated_sprite.flip_h == true:
 			shoot(120)
 		else:
 			shoot(120)
 
 func _on_down_body_entered(body: Node2D) -> void:
-	print("2")
+	print_debug("2")
 	if body.name == "Player":
-		print("down detected")
+		print_debug("down detected")
 		shoot(-275)
 
 
 func _on_back_diag_body_entered(body: Node2D) -> void:
-	print("3")
+	print_debug("3")
 	if body.name == "Player":
-		print("back detetced")
+		print_debug("back detetced")
 		if animated_sprite.flip_h == true:
 			shoot(40)
 		else:
@@ -125,7 +125,7 @@ func _on_back_diag_body_entered(body: Node2D) -> void:
 
 func _on_hurt_box_area_entered(area: Area2D) -> void:
 	health -= 1
-	print(has_died)
+	print_debug(has_died)
 	if health <= 0 && has_died == false:
 		has_died = true
 		motion_locked = true
@@ -138,7 +138,6 @@ func _on_hurt_box_area_entered(area: Area2D) -> void:
 		animated_sprite.play("Death")
 		$Timers/respawn_timer.start()
 	elif health > 0 && has_died == false:
-		print("hit")
 		animation_locked = true
 		animated_sprite.play("Impact")
 		$Timers/hit_timer.start()

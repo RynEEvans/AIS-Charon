@@ -166,7 +166,7 @@ func _on_head_hit_box_body_entered(body: Node2D) -> void:
 
 func _on_head_hurt_box_area_entered(area: Area2D) -> void:
 	health -= 1
-	print(has_died)
+	print_debug(has_died)
 	if health <= 0 && has_died == false:
 		has_died = true
 		motion_locked = true
@@ -179,7 +179,6 @@ func _on_head_hurt_box_area_entered(area: Area2D) -> void:
 		animated_sprite.play("Death")
 		$respawn_timer.start()
 	elif health > 0 && has_died == false:
-		print("hit")
 		motion_locked = true
 		animated_sprite.play("Impact")
 		$hit_timer.start()
