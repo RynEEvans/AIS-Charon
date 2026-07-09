@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://iwgivgka3qgs"]
+
+[ext_resource type="Script" uid="uid://cipody4fvjvol" path="res://Common/interacting_component.gd" id="1_0rw8x"]
+[ext_resource type="FontFile" uid="uid://djrima1chivbo" path="res://Assests/Fonts/DigitalNormal-xO6j.otf" id="2_wdyy6"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yi7q1"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4fmei"]
+font = ExtResource("2_wdyy6")
+font_size = 14
+font_color = Color(0.031278443, 0.9985526, 7.315874e-06, 1)
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[node name="InteractingComponent" type="Node2D" unique_id=1736211980]
+script = ExtResource("1_0rw8x")
+
+[node name="InteractRange" type="Area2D" parent="." unique_id=1582721309]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractRange" unique_id=1142630756]
+shape = SubResource("CircleShape2D_yi7q1")
+
+[node name="InteractLabel" type="Label" parent="." unique_id=1837336977]
+z_index = 10
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -52.0
+offset_right = 48.0
+offset_bottom = -29.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+text = "E to Interact"
+label_settings = SubResource("LabelSettings_4fmei")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="area_entered" from="InteractRange" to="." method="_on_interact_range_area_entered"]
+[connection signal="area_exited" from="InteractRange" to="." method="_on_interact_range_area_exited"]

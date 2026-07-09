@@ -65,6 +65,7 @@ var suffocating = false
 
 #Beacon Count
 var beacon_num = 3 #Number of Beacons that are avaible
+var beacon_stack := Stack.new()
 
 func _ready():
 	health = 10
@@ -139,7 +140,6 @@ func _physics_process(delta: float):
 		print_debug("BEACON")
 		deploy_beacon()
 		
-	pickup_beacon()
 
 	var was_on_floor = is_on_floor()
 	
@@ -354,11 +354,11 @@ func shoot():
 		var instance = bullet.instantiate()
 		instance.flip(false)
 		instance.dir = rotation
-		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
+		instance.spawnPos = Vector2(global_position.x - 10 ,global_position.y)
 		instance.spawnRot = global_rotation
 		if facing_left == true:
 			instance.flip(true)
-			instance.spawnPos = Vector2(global_position.x - 20,global_position.y - 33)
+			instance.spawnPos = Vector2(global_position.x - 0,global_position.y)
 		main.add_child.call_deferred(instance)
 		o2 -= 2
 		update_o2_bar()
@@ -372,30 +372,44 @@ func check_mag_size(mag: int):
 	else:
 		$Timers/gun_cooldown.start()
 
-#Deploying Beacon
+# Deploying Beacon
 func deploy_beacon():
 	if beacon_num > 0:
 		var instance = beacon.instantiate()
 		instance.dir = rotation
-		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
+		instance.spawnPos = Vector2(global_position.x + 25 ,global_position.y)
+		if facing_left == true:
+			instance.spawnPos = Vector2(global_position.x - 25 ,global_position.y)
 		instance.spawnRot = global_rotation
 		instance.zdex = -2
 		main.add_child(instance)
 		instance.beacon_sprite.play("Idle")
+		beacon_stack.push(instance)
 		beacon_num -= 1
+		beacon_spawn()
 	elif beacon_num > 3:
 		beacon_num = 3
 
+# Picking Up Beacon
 func pickup_beacon():
-	
 	var instance = beacon.instantiate()
 	if instance.touching == true && Input.is_action_pressed("interact"):
 		print_debug("PRESSED F")
 		instance.picked_up()
 		beacon_num += 1
+		beacon_stack.pop()
 		print_debug("picked up beacon")
 		
-#Animation Lock
+		
+# Respawning at Last Placed Beacon
+func beacon_spawn():
+	if beacon_stack.is_empty() == false:
+
+		%RespawnPoint.position = beacon_stack.peek().position
+	else:
+		print_debug("Empty")
+
+# Animation Lock
 func _on_player_sprite_2d_animation_finished() -> void:
 	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(player_sprite.animation)):
 		animation_locked = false

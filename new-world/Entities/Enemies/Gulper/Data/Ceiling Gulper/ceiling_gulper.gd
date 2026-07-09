@@ -44,17 +44,17 @@ func _process(delta):
 	if  (!Lray.is_colliding() || !Rray.is_colliding()) &&  is_on_ceiling() && !ray_trigger:
 		velocity.x = 0
 		ray_trigger = true
-		$ray_timer.start()
+		$Timers/ray_timer.start()
 		dir = dir * -1
 	if (is_on_wall()):
 		if(hit_wall == false):
 			hit_wall = true
-			$wall_timer.start()
+			$Timers/wall_timer.start()
 			dir *= -1
 	if (is_on_wall()):
 		if(hit_wall == false):
 			hit_wall = true
-			$wall_timer.start()
+			$Timers/wall_timer.start()
 			dir *= -1
 	move(delta)
 	move_and_slide()
@@ -92,8 +92,8 @@ func forward_lunge():
 		velocity.x = 0
 		motion_locked = true
 		animated_sprite.play("Charge")
-		$left_charge_time.start()
-		$lunge_cooldown.start()
+		$Timers/left_charge_time.start()
+		$Timers/lunge_cooldown.start()
 
 func upward_lunge():
 	if (can_lunge == true):
@@ -101,12 +101,12 @@ func upward_lunge():
 		velocity.x = 0
 		motion_locked = true
 		animated_sprite.play("Charge")
-		$up_charge_time.start()
-		$lunge_cooldown.start()
+		$Timers/up_charge_time.start()
+		$Timers/lunge_cooldown.start()
 
 func check_for_wall():
 	if (wall_ray.is_colliding()):
-		$wall_timer.start()
+		$Timers/wall_timer.start()
 
 func _on_direction_timer_timeout() -> void:
 	if !motion_locked:
@@ -127,7 +127,7 @@ func _on_left_charge_time_timeout() -> void:
 		lunge_detection.play("right_lunge")
 	
 	
-	$move_timer.start()
+	$Timers/move_timer.start()
 
 
 func _on_move_timer_timeout() -> void:
@@ -155,7 +155,7 @@ func _on_up_charge_time_timeout() -> void:
 	velocity.x = 0
 	animated_sprite.play("UpwardLunge")
 	lunge_detection.play("up_lunge")
-	$move_timer.start()
+	$Timers/move_timer.start()
 
 
 func _on_left_lunge_body_entered(body: Node2D) -> void:
@@ -179,12 +179,12 @@ func _on_head_hurt_box_area_entered(area: Area2D) -> void:
 		$HeadHitBox.monitoring = false
 		$HeadHurtBox.monitoring = false
 		animated_sprite.play("Death")
-		$respawn_timer.start()
+		$Timers/respawn_timer.start()
 	elif health > 0 && has_died == false:
 		print("hit")
 		motion_locked = true
 		animated_sprite.play("Impact")
-		$hit_timer.start()
+		$Timers/hit_timer.start()
 
 
 func _on_respawn_timer_timeout() -> void:

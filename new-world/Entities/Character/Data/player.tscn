@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://coml3ichjlbsy" path="res://UI/Head/hpOxyBarHeadLow.png" id="15_32tbp"]
 [ext_resource type="Texture2D" uid="uid://f751axmbqvue" path="res://UI/O2 Bar/hpOxyBarO2.png" id="16_32tbp"]
 [ext_resource type="Texture2D" uid="uid://dxuhpfnkx2hq4" path="res://UI/hpOxyBarBackground.png" id="17_b2yf4"]
+[ext_resource type="PackedScene" uid="uid://iwgivgka3qgs" path="res://Common/interacting_component.tscn" id="19_bqni4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dcwdy"]
 atlas = ExtResource("2_76vsb")
@@ -1488,25 +1489,23 @@ script = ExtResource("1_3c51y")
 sprite_frames = SubResource("SpriteFrames_tp31j")
 animation = &"IdleLeft"
 autoplay = "IdleRight"
-offset = Vector2(-32, -32)
 
 [node name="GunArm" type="AnimatedSprite2D" parent="." unique_id=313007309]
-position = Vector2(-33, -32)
 sprite_frames = SubResource("SpriteFrames_ocp21")
 animation = &"ShootRight"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=838017947]
-visible = false
-position = Vector2(-33, -30)
 shape = SubResource("CapsuleShape2D_bfpf6")
 
 [node name="hitbox" type="Area2D" parent="." unique_id=539968709]
-visible = false
+light_mask = 5
+visibility_layer = 5
 collision_layer = 12
 collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox" unique_id=1937318629]
-position = Vector2(-33, -30)
+light_mask = 4
+visibility_layer = 4
 shape = SubResource("CapsuleShape2D_cyipv")
 
 [node name="Timers" type="Node2D" parent="." unique_id=608969826]
@@ -1632,13 +1631,14 @@ scale = Vector2(3.9599998, 2.3199973)
 texture = ExtResource("17_b2yf4")
 
 [node name="fall_box" type="Area2D" parent="." unique_id=1299847002]
+visible = false
 collision_layer = 2147483648
 collision_mask = 2147483648
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="fall_box" unique_id=1632840698]
-visible = false
-position = Vector2(-33, -28)
 shape = SubResource("CircleShape2D_crn8y")
+
+[node name="InteractingComponent" parent="." unique_id=1736211980 instance=ExtResource("19_bqni4")]
 
 [connection signal="animation_finished" from="Body" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="area_entered" from="hitbox" to="." method="_on_hitbox_area_entered"]
