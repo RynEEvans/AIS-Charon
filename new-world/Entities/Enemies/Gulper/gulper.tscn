@@ -466,7 +466,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.36666667, 0.6666667, 1.0666667),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(11, -60), Vector2(11, -60), Vector2(0, 0)]
+"values": [Vector2(10, 0), Vector2(10, -60), Vector2(10, -60), Vector2(0, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jh3tt"]
@@ -486,24 +486,27 @@ size = Vector2(68.5, 24)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0laho"]
 size = Vector2(138.5, 29)
 
-[node name="Gulper" type="CharacterBody2D" unique_id=1240666865]
+[node name="Gulper" type="CharacterBody2D" unique_id=1145361663]
 script = ExtResource("1_ldw6m")
+
+[node name="direction_timer" type="Timer" parent="." unique_id=521888903]
+one_shot = true
+autostart = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2127023239]
 position = Vector2(-117, -121)
 sprite_frames = SubResource("SpriteFrames_hxu7c")
-animation = &"Impact"
+animation = &"UpwardLunge"
 autoplay = "Idle"
-frame_progress = 0.94322956
+frame_progress = 0.27595997
 centered = false
 
 [node name="HeadHitBox" type="Area2D" parent="." unique_id=149545991]
 position = Vector2(-1, -2)
-collision_layer = 6
-collision_mask = 6
+collision_layer = 4
+collision_mask = 4
 
 [node name="Head" type="CollisionShape2D" parent="HeadHitBox" unique_id=1501994884]
-position = Vector2(0, 4)
 scale = Vector2(3.7660012, -1.2696522)
 shape = SubResource("CapsuleShape2D_hkuac")
 
@@ -512,104 +515,102 @@ libraries/ = SubResource("AnimationLibrary_jh3tt")
 
 [node name="HeadHurtBox" type="Area2D" parent="." unique_id=703366954]
 position = Vector2(-1, -2)
-collision_layer = 64
-collision_mask = 64
+collision_layer = 8
+collision_mask = 8
 
 [node name="Head" type="CollisionShape2D" parent="HeadHurtBox" unique_id=316677711]
-position = Vector2(0, 4)
+light_mask = 8
+visibility_layer = 8
 scale = Vector2(3.7660012, -1.2696522)
 shape = SubResource("CapsuleShape2D_hkuac")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="HeadHurtBox" unique_id=1480718230]
 libraries/ = SubResource("AnimationLibrary_jh3tt")
 
-[node name="ray_timer" type="Timer" parent="." unique_id=66492121]
-
-[node name="direction_timer" type="Timer" parent="." unique_id=521888903]
-autostart = true
-
-[node name="up_charge_time" type="Timer" parent="." unique_id=214975434]
-wait_time = 0.75
-one_shot = true
-
-[node name="left_charge_time" type="Timer" parent="." unique_id=446827458]
-wait_time = 0.75
-one_shot = true
-
-[node name="move_timer" type="Timer" parent="." unique_id=896798661]
-wait_time = 0.75
-one_shot = true
-
-[node name="wall_timer" type="Timer" parent="." unique_id=314127101]
-wait_time = 2.0
-
-[node name="lunge_cooldown" type="Timer" parent="." unique_id=289208375]
-wait_time = 3.0
-
-[node name="respawn_timer" type="Timer" parent="." unique_id=1774631294]
-wait_time = 5.0
-one_shot = true
-
-[node name="hit_timer" type="Timer" parent="." unique_id=1592646332]
-wait_time = 0.25
-one_shot = true
-
 [node name="Base" type="CollisionShape2D" parent="." unique_id=2098673208]
-position = Vector2(0.5, 36.75)
+position = Vector2(2, 38)
 shape = SubResource("RectangleShape2D_ldw6m")
 one_way_collision = true
 
-[node name="LeftCast" type="RayCast2D" parent="." unique_id=1866968339]
-target_position = Vector2(-32, 41)
-
-[node name="RightCast" type="RayCast2D" parent="." unique_id=420705644]
-target_position = Vector2(31, 42)
-
 [node name="TurnAround" type="Area2D" parent="." unique_id=601860007]
 position = Vector2(68, 0)
-collision_layer = 2
-collision_mask = 2
+collision_layer = 32
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TurnAround" unique_id=277576033]
-position = Vector2(-34.25, 7.5)
+light_mask = 32
+visibility_layer = 32
+position = Vector2(-31, 8)
 shape = SubResource("RectangleShape2D_iwmjb")
 
 [node name="LeftLunge" type="Area2D" parent="." unique_id=364054172]
-collision_layer = 2
-collision_mask = 2
+collision_layer = 32
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftLunge" unique_id=1566941506]
-position = Vector2(-34.25, 7)
+light_mask = 32
+visibility_layer = 32
+position = Vector2(-36, 8)
 shape = SubResource("RectangleShape2D_iwmjb")
 
 [node name="wall_detection" type="RayCast2D" parent="." unique_id=1707321751]
 target_position = Vector2(-37, 0)
+collision_mask = 16
 hit_from_inside = true
 collide_with_areas = true
 
 [node name="UpLunge" type="Area2D" parent="." unique_id=743023564]
-collision_layer = 2
-collision_mask = 2
+collision_layer = 32
+collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="UpLunge" unique_id=80701973]
+light_mask = 32
+visibility_layer = 32
 position = Vector2(0.75, -63)
 shape = SubResource("RectangleShape2D_0laho")
 
-[node name="Node2D" type="Node2D" parent="." unique_id=423314910]
+[node name="Timers" type="Node" parent="." unique_id=1100609473]
 
+[node name="hit_timer" type="Timer" parent="Timers" unique_id=1592646332]
+wait_time = 0.25
+one_shot = true
+
+[node name="respawn_timer" type="Timer" parent="Timers" unique_id=1774631294]
+wait_time = 5.0
+one_shot = true
+
+[node name="lunge_cooldown" type="Timer" parent="Timers" unique_id=289208375]
+wait_time = 3.0
+
+[node name="wall_timer" type="Timer" parent="Timers" unique_id=314127101]
+wait_time = 2.0
+
+[node name="move_timer" type="Timer" parent="Timers" unique_id=896798661]
+wait_time = 0.75
+one_shot = true
+
+[node name="left_charge_time" type="Timer" parent="Timers" unique_id=446827458]
+wait_time = 0.75
+one_shot = true
+
+[node name="up_charge_time" type="Timer" parent="Timers" unique_id=214975434]
+wait_time = 0.75
+one_shot = true
+
+[node name="ray_timer" type="Timer" parent="Timers" unique_id=66492121]
+
+[connection signal="timeout" from="direction_timer" to="." method="_on_direction_timer_timeout"]
 [connection signal="body_entered" from="HeadHitBox" to="." method="_on_head_hit_box_body_entered"]
-[connection signal="area_entered" from="HeadHurtBox" to="." method="_on_head_hit_box_area_entered"]
 [connection signal="area_entered" from="HeadHurtBox" to="." method="_on_head_hurt_box_area_entered"]
 [connection signal="body_entered" from="HeadHurtBox" to="." method="_on_head_hit_box_body_entered"]
-[connection signal="timeout" from="ray_timer" to="." method="_on_ray_timer_timeout"]
-[connection signal="timeout" from="direction_timer" to="." method="_on_direction_timer_timeout"]
-[connection signal="timeout" from="up_charge_time" to="." method="_on_up_charge_time_timeout"]
-[connection signal="timeout" from="left_charge_time" to="." method="_on_left_charge_time_timeout"]
-[connection signal="timeout" from="move_timer" to="." method="_on_move_timer_timeout"]
-[connection signal="timeout" from="wall_timer" to="." method="_on_wall_timer_timeout"]
-[connection signal="timeout" from="lunge_cooldown" to="." method="_on_lunge_cooldown_timeout"]
-[connection signal="timeout" from="respawn_timer" to="." method="_on_respawn_timer_timeout"]
-[connection signal="timeout" from="hit_timer" to="." method="_on_hit_timer_timeout"]
 [connection signal="body_entered" from="TurnAround" to="." method="_on_turn_around_body_entered"]
 [connection signal="body_entered" from="LeftLunge" to="." method="_on_left_lunge_body_entered"]
 [connection signal="body_entered" from="UpLunge" to="." method="_on_up_lunge_body_entered"]
+[connection signal="timeout" from="Timers/hit_timer" to="." method="_on_hit_timer_timeout"]
+[connection signal="timeout" from="Timers/respawn_timer" to="." method="_on_respawn_timer_timeout"]
+[connection signal="timeout" from="Timers/lunge_cooldown" to="." method="_on_lunge_cooldown_timeout"]
+[connection signal="timeout" from="Timers/wall_timer" to="." method="_on_wall_timer_timeout"]
+[connection signal="timeout" from="Timers/move_timer" to="." method="_on_move_timer_timeout"]
+[connection signal="timeout" from="Timers/left_charge_time" to="." method="_on_left_charge_time_timeout"]
+[connection signal="timeout" from="Timers/up_charge_time" to="." method="_on_up_charge_time_timeout"]
+[connection signal="timeout" from="Timers/ray_timer" to="." method="_on_ray_timer_timeout"]
