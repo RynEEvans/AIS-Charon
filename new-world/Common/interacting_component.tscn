@@ -7,9 +7,9 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_4fmei"]
 font = ExtResource("2_wdyy6")
-font_size = 14
+font_size = 25
 font_color = Color(0.031278443, 0.9985526, 7.315874e-06, 1)
-outline_size = 3
+outline_size = 100
 outline_color = Color(0, 0, 0, 1)
 
 [node name="InteractingComponent" type="Node2D" unique_id=1736211980]
@@ -24,19 +24,20 @@ shape = SubResource("CircleShape2D_yi7q1")
 
 [node name="InteractLabel" type="Label" parent="." unique_id=1837336977]
 z_index = 10
+texture_filter = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -47.0
-offset_top = -52.0
-offset_right = 48.0
-offset_bottom = -29.0
+offset_left = -89.5
+offset_top = -82.0
+offset_right = 90.5
+offset_bottom = -42.04
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
-text = "E to Interact"
+text = "F to Interact"
 label_settings = SubResource("LabelSettings_4fmei")
 horizontal_alignment = 1
 vertical_alignment = 1

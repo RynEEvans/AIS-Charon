@@ -43,6 +43,15 @@ folder_colors={
 "res://UI/Health Bar/": "green"
 }
 
+[global_group]
+
+Player=""
+
+[gui]
+
+fonts/dynamic_fonts/use_oversampling=false
+theme/default_font_multichannel_signed_distance_field=true
+
 [input]
 
 up={
@@ -98,6 +107,7 @@ interact={
 2d_physics/layer_3="enemies"
 2d_physics/layer_4="bullets"
 2d_physics/layer_5="collision detection"
+2d_physics/layer_6="Enemy Detection"
 
 [physics]
 

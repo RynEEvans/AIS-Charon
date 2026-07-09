@@ -38,9 +38,9 @@ var has_died : bool = false
 
 
 func _process(delta):
-	#if not is_on_floor():
-		#velocity += get_gravity() * delta
-		#velocity.x = 0
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+		velocity.x = 0
 	#if  (!Lray.is_colliding() || !Rray.is_colliding()) &&  is_on_floor() && !ray_trigger:
 		#velocity.x = 0
 		#ray_trigger = true
@@ -106,10 +106,8 @@ func check_for_wall():
 		$Timers/wall_timer.start()
 
 func _on_direction_timer_timeout() -> void:
-	print_debug("SWITCH")
 	if !motion_locked:
 		$direction_timer.wait_time = choose([3.5,4.0,4.5,5.0])
-		print_debug($direction_timer.wait_time)
 		if (gulp_is_chase == false):
 			dir = choose([Vector2.LEFT, Vector2.RIGHT])
 			velocity.x = 0
@@ -142,7 +140,6 @@ func _on_lunge_cooldown_timeout() -> void:
 
 
 func _on_turn_around_body_entered(body: Node2D) -> void:
-	print_debug("TURN AROUND")
 	if body.is_in_group("Player"):
 		dir *= -1
 		forward_lunge()
